@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#070707" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Hit The Fan - Tap hard. Spin fast. Don't break it!" />
+  <title>HIT THE FAN</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/style.css" />
+</head>
+<body>
+  <main class="game-shell">
+    <section class="phone-frame" aria-label="Hit The Fan game">
+      <div id="canvas-container"></div>
+      <div class="scene-grime"></div>
+      <div id="screen-flash"></div>
+      <div id="tap-area" aria-label="Tap fan"></div>
+
+      <div id="ui-overlay">
+        <!-- ── HOME SCREEN (MAIN MENU) OVERLAY ── -->
+        <div class="home-screen visible" id="home-screen">
+          <header class="home-header">
+            <div class="brand-lockup-large">
+              <img class="logo-large" src="/f37c452b-0b2e-4cac-a85b-e4e39240259a.jpg" alt="Logo" />
+              <h1><span>HIT</span> THE <strong>FAN</strong></h1>
+              <p class="mini-tagline">SPIN TO DESTRUCTION</p>
+            </div>
+          </header>
+
+          <div class="home-content">
+            <!-- User Login & Profile Widget -->
+            <div class="profile-card">
+              <div class="profile-head">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-text">
+                  <span class="profile-sub">ACTIVE PRO</span>
+                  <strong id="profile-username">Guest</strong>
+                </div>
+              </div>
+              <div class="profile-login-form">
+                <input type="text" id="username-input" placeholder="Create profile..." maxlength="12" />
+                <button class="action-btn" id="login-submit-btn">LOGIN</button>
+              </div>
+              <div class="profile-switcher">
+                <label for="profile-select">Profile Switcher:</label>
+                <select id="profile-select">
+                  <option value="Guest">Guest</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Stats Block -->
+            <div class="stats-block">
+              <h2 class="section-title">CAREER STATISTICS</h2>
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <span class="box-num" id="stats-destroyed">0</span>
+                  <span class="box-lbl">BROKEN</span>
+                </div>
+                <div class="stat-box">
+                  <span class="box-num" id="stats-taps">0</span>
+                  <span class="box-lbl">TAPS</span>
+                </div>
+                <div class="stat-box">
+                  <span class="box-num" id="stats-best-rpm">0</span>
+                  <span class="box-lbl">MAX RPM</span>
+                </div>
+                <div class="stat-box">
+                  <span class="box-num" id="stats-collection">0%</span>
+                  <span class="box-lbl">COLLECTION</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Run History -->
+            <div class="history-block">
+              <h2 class="section-title">RUN HISTORY</h2>
+              <div class="history-list" id="history-list-container">
+                <div class="no-history">No runs recorded yet. Spin now!</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-actions">
+            <button class="play-btn-large" id="play-btn-large">
+              <span>TAP TO SPIN</span>
+              PLAY GAME
+            </button>
+          </div>
+        </div>
+
+        <!-- ── GAMEPLAY HUD overlay ── -->
+        <header class="top-bar">
+          <div class="brand-lockup">
+            <img class="reference-logo" src="/f37c452b-0b2e-4cac-a85b-e4e39240259a.jpg" alt="" />
+            <div>
+              <p class="mini-label">TAP HARD</p>
+              <h1><span>HIT</span> THE <strong>FAN</strong></h1>
+            </div>
+          </div>
+
+          <button class="icon-btn" id="settings-btn" aria-label="Settings" title="Settings">
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/>
+              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.03.03a2 2 0 1 1-2.83 2.83l-.03-.03A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.05a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.03.03a2 2 0 1 1-2.83-2.83l.03-.03A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.05A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.03-.03a2 2 0 1 1 2.83-2.83l.03.03A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.05a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.03-.03a2 2 0 1 1 2.83 2.83l-.03.03A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.05A1.7 1.7 0 0 0 19.4 15Z"/>
+            </svg>
+          </button>
+        </header>
+
+        <div class="score-row">
+          <div class="stat-badge">
+            <span class="stat-icon">T</span>
+            <span class="stat-label">BEST</span>
+            <span class="stat-value" id="best-value">0</span>
+          </div>
+          <div class="stat-badge rpm-mini">
+            <span class="stat-label">RPM</span>
+            <span class="stat-value" id="rpm-value">0</span>
+          </div>
+        </div>
+
+        <div class="progress-row">
+          <div class="wallet-pill">
+            <span class="coin-dot"></span>
+            <strong id="coin-value">0</strong>
+          </div>
+          <button class="panel-btn" id="upgrade-panel-btn">UPGRADES</button>
+          <button class="panel-btn" id="garage-panel-btn">GARAGE</button>
+        </div>
+
+        <section class="center-display">
+          <div class="rpm-block" id="rpm-label">
+            <span class="rpm-tag">RPM</span>
+            <span class="rpm-number" id="rpm-value-ghost">0</span>
+          </div>
+          <div class="taps-block" id="taps-label">
+            <span class="taps-tag">TAPS</span>
+            <span class="taps-number" id="taps-value">0</span>
+          </div>
+        </section>
+
+        <div class="start-prompt visible" id="start-prompt">
+          <div class="tap-target">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p>TAP THE CENTER</p>
+          <strong>TO START</strong>
+        </div>
+
+        <div class="danger-banner" id="danger-banner">
+          <span>!</span>
+          <strong>DANGER ZONE!</strong>
+        </div>
+
+        <div class="speed-bar-wrapper" id="speed-bar">
+          <div class="speed-bar-label">SPEED</div>
+          <div class="speed-bar-track">
+            <div class="speed-bar-fill normal" id="speed-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- ── MODALS & PANELS ── -->
+        <div class="game-over-modal" id="game-over-modal">
+          <div class="modal-card">
+            <h2>FAN DESTROYED!</h2>
+            <div class="modal-score-block">
+              <span>SCORE</span>
+              <div class="modal-score-row">
+                <strong id="final-score">0</strong>
+                <em id="new-best-badge">NEW BEST!</em>
+              </div>
+              <div class="coin-earned">+<span id="coins-earned">0</span> COINS</div>
+            </div>
+            <div class="modal-buttons">
+              <button class="modal-btn retry-btn" id="retry-btn">RETRY <span>R</span></button>
+              <button class="modal-btn home-btn" id="home-btn">HOME <span>H</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-panel" id="settings-panel">
+          <div class="settings-card">
+            <div class="settings-title">SETTINGS</div>
+            <div class="settings-row">
+              <span>Sound</span>
+              <button class="settings-toggle" id="sound-toggle" aria-label="Toggle sound">ON</button>
+            </div>
+            <div class="settings-row">
+              <span>Vibration</span>
+              <button class="settings-toggle" id="vibration-toggle" aria-label="Toggle vibration">ON</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revised Upgrades Panel: Per selected fan upgrades -->
+        <div class="side-panel" id="upgrade-panel">
+          <div class="side-card">
+            <div class="side-title">
+              <span>FAN UPGRADES</span>
+              <button class="close-panel" data-close-panel="upgrade-panel" aria-label="Close upgrades">X</button>
+            </div>
+            <div class="upgrade-fan-specs">
+              <span id="upgrade-active-fan-name">CLASSIC FAN</span>
+              <div class="specs-mini-bar">
+                <span>Speed: <strong id="spec-speed-val">1.0x</strong></span>
+                <span>Max RPM: <strong id="spec-durability-val">1.0x</strong></span>
+              </div>
+            </div>
+            <div class="upgrade-list">
+              <button class="upgrade-card" data-upgrade="speed">
+                <span>
+                  <strong>Fast Speed</strong>
+                  <small>Increases RPM gained per tap</small>
+                </span>
+                <em id="upgrade-speed-info">LV 0 - 50C</em>
+              </button>
+              <button class="upgrade-card" data-upgrade="durability">
+                <span>
+                  <strong>Durability</strong>
+                  <small>Increases Max RPM limit</small>
+                </span>
+                <em id="upgrade-durability-info">LV 0 - 60C</em>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Garage Panel: Store details + stats indicators -->
+        <div class="side-panel" id="garage-panel">
+          <div class="side-card">
+            <div class="side-title">
+              <span>GARAGE & STORE</span>
+              <button class="close-panel" data-close-panel="garage-panel" aria-label="Close garage">X</button>
+            </div>
+            <p class="shop-label">FANS DATABASE</p>
+            <div class="shop-grid" id="fan-shop"></div>
+            <p class="shop-label">BACKGROUND WALLPAPER</p>
+            <div class="shop-grid" id="theme-shop"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
