@@ -4,6 +4,17 @@ let els = {};
 let vibrationEnabled = true;
 let destroyedModalTimer = null;
 
+export function escapeHTML(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }[m]));
+}
+
 export function initUI() {
   els = {
     rpmValue: document.getElementById('rpm-value'),
@@ -331,7 +342,7 @@ function _updateProfileData(data) {
     const profilesKey = data.profiles.join(',');
     if (els.profileSelect.dataset.lastProfiles !== profilesKey) {
       els.profileSelect.innerHTML = data.profiles.map(username => 
-        `<option value="${username}" ${username === data.activeUser ? 'selected' : ''}>${username}</option>`
+        `<option value="${escapeHTML(username)}" ${username === data.activeUser ? 'selected' : ''}>${escapeHTML(username)}</option>`
       ).join('');
       els.profileSelect.dataset.lastProfiles = profilesKey;
     } else {
